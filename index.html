@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VALOIS — Ultra-Luxury Alpine Cabin & Sanctuary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        valois: {
+                            obsidian: '#08090B',
+                            charcoal: '#121418',
+                            slate: '#1E2229',
+                            champagne: '#DFD3C3',
+                            bronze: '#C5A880',
+                            copper: '#9E774B',
+                            snow: '#F7F8FA',
+                            mist: '#8E95A5'
+                        }
+                    },
+                    letterSpacing: {
+                        widest2: '0.25em',
+                        widest3: '0.35em',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #08090B;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C5A880;
+            border-radius: 9999px;
+        }
+        .glass-panel {
+            background: rgba(18, 20, 24, 0.76);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(223, 211, 195, 0.12);
+        }
+        .glass-panel-subtle {
+            background: rgba(8, 9, 11, 0.68);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(197, 168, 128, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 25px 2px rgba(197, 168, 128, 0.08);
+        }
+        .text-glow {
+            text-shadow: 0 0 24px rgba(197, 168, 128, 0.35);
+        }
+        canvas {
+            touch-action: pan-y;
+        }
+    </style>
+</head>
+<body class="bg-valois-obsidian text-valois-snow font-sans antialiased overflow-x-hidden selection:bg-valois-bronze selection:text-valois-obsidian">
+
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-500 py-5 px-6 md:px-12 flex items-center justify-between pointer-events-none">
+        <div class="flex items-center space-x-3 pointer-events-auto">
+            <span class="text-2xl font-serif tracking-widest3 font-light text-valois-snow">VALOIS</span>
+            <span class="hidden md:inline-block w-px h-4 bg-valois-bronze/40"></span>
+            <span class="hidden md:inline-block text-[10px] tracking-widest2 uppercase text-valois-champagne/70">Zermatt • 2,480m Alpine Sanctum</span>
+        </div>
+
+        <nav class="hidden lg:flex items-center space-x-8 glass-panel px-6 py-2.5 rounded-full pointer-events-auto shadow-2xl">
+            <a href="#experience" class="text-xs uppercase tracking-widest text-valois-snow/80 hover:text-valois-bronze transition-colors">Trajectory</a>
+            <a href="#sanctuary" class="text-xs uppercase tracking-widest text-valois-snow/80 hover:text-valois-bronze transition-colors">The Sanctuary</a>
+            <a href="#architecture" class="text-xs uppercase tracking-widest text-valois-snow/80 hover:text-valois-bronze transition-colors">Design & Materiality</a>
+            <a href="#expeditions" class="text-xs uppercase tracking-widest text-valois-snow/80 hover:text-valois-bronze transition-colors">Expeditions</a>
+            <a href="#pricing" class="text-xs uppercase tracking-widest text-valois-snow/80 hover:text-valois-bronze transition-colors">Private Buyout</a>
+        </nav>
+
+        <div class="flex items-center space-x-3 pointer-events-auto">
+            <!-- Audio Ambience Toggle -->
+            <button id="soundToggleBtn" class="glass-panel px-3.5 py-2 rounded-full flex items-center space-x-2 text-xs uppercase tracking-widest text-valois-champagne hover:border-valois-bronze/50 transition-all group">
+                <span id="soundIcon" class="w-2 h-2 rounded-full bg-valois-mist group-hover:scale-125 transition-transform"></span>
+                <span id="soundLabel" class="text-[11px]">Alpine Ambience: Off</span>
+            </button>
+
+            <!-- Reserve CTA -->
+            <button onclick="openBookingModal('The Architectural Residency Buyout ($15,000)')" class="bg-gradient-to-r from-valois-bronze to-valois-copper hover:brightness-110 text-valois-obsidian font-semibold px-5 py-2 rounded-full text-xs uppercase tracking-widest shadow-lg shadow-valois-bronze/20 transition-all">
+                Reserve Stay
+            </button>
+        </div>
+    </header>
+
+    <main class="relative">
+        <!-- 450vh Scroll Track for 120-frame cinematic scrubbing -->
+        <section id="experience" class="relative w-full h-[450vh]">
+            <div class="sticky top-0 left-0 w-full h-screen overflow-hidden bg-valois-obsidian flex items-center justify-center">
+                
+                <!-- Main Canvas Engine -->
+                <canvas id="scrubCanvas" class="absolute inset-0 w-full h-full object-cover z-0"></canvas>
+                
+                <!-- Atmospheric Vignette & Contrast Gradients -->
+                <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-valois-obsidian via-transparent to-valois-obsidian/75 z-10"></div>
+                <div class="absolute inset-0 pointer-events-none bg-gradient-to-r from-valois-obsidian/60 via-transparent to-valois-obsidian/60 z-10"></div>
+
+                <!-- HUD: Flight & Alpine Sanctuary Telemetry -->
+                <div class="absolute top-24 left-6 md:left-12 z-20 pointer-events-none max-w-sm">
+                    <div class="glass-panel-subtle p-4 rounded-xl border border-white/5 space-y-2">
+                        <div class="flex items-center justify-between text-[10px] tracking-widest uppercase text-valois-mist">
+                            <span>Sanctuary Coordinates</span>
+                            <span id="telemetryActBadge" class="text-valois-bronze font-mono">ACT I : CANOPY ARRIVAL</span>
+                        </div>
+                        <div class="text-sm font-light text-valois-snow tracking-wide flex items-center space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>VALOIS APEX • 45°55'25"N 7°44'56"E</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-[11px] font-mono text-valois-champagne/80">
+                            <div>
+                                <span class="block text-[9px] text-valois-mist uppercase">Perspective</span>
+                                <span id="telemetryCam">Heli-Arc 45°</span>
+                            </div>
+                            <div>
+                                <span class="block text-[9px] text-valois-mist uppercase">Elevation</span>
+                                <span id="telemetryAlt">2,480 M</span>
+                            </div>
+                            <div>
+                                <span class="block text-[9px] text-valois-mist uppercase">Sequence</span>
+                                <span id="telemetryFrame">#0001 / 120</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute top-24 right-6 md:right-12 z-20 hidden md:flex flex-col space-y-2">
+                    <button onclick="seekToFrame(0)" class="waypoint-btn glass-panel-subtle hover:bg-valois-bronze/20 px-3.5 py-2 rounded-lg text-left text-[11px] font-mono tracking-wider text-valois-snow/80 border border-white/5 transition-all flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-valois-bronze"></span>
+                        <span>01 • Exterior Cantilever Monolith</span>
+                    </button>
+                    <button onclick="seekToFrame(35)" class="waypoint-btn glass-panel-subtle hover:bg-valois-bronze/20 px-3.5 py-2 rounded-lg text-left text-[11px] font-mono tracking-wider text-valois-snow/80 border border-white/5 transition-all flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-valois-mist"></span>
+                        <span>02 • The Great Basalt Hearth</span>
+                    </button>
+                    <button onclick="seekToFrame(75)" class="waypoint-btn glass-panel-subtle hover:bg-valois-bronze/20 px-3.5 py-2 rounded-lg text-left text-[11px] font-mono tracking-wider text-valois-snow/80 border border-white/5 transition-all flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-valois-mist"></span>
+                        <span>03 • Geothermal Mineral Onsen</span>
+                    </button>
+                    <button onclick="seekToFrame(110)" class="waypoint-btn glass-panel-subtle hover:bg-valois-bronze/20 px-3.5 py-2 rounded-lg text-left text-[11px] font-mono tracking-wider text-valois-snow/80 border border-white/5 transition-all flex items-center space-x-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-valois-mist"></span>
+                        <span>04 • Matterhorn Observatory Deck</span>
+                    </button>
+                </div>
+
+                <!-- Dynamic Narrative Cards -->
+                <div id="narrativeOverlay" class="absolute z-20 pointer-events-none px-6 md:px-12 w-full max-w-4xl text-center transition-all duration-700 transform">
+                    <div id="narrativeBadge" class="inline-block text-[10px] uppercase tracking-widest3 font-medium text-valois-bronze mb-3 px-3.5 py-1 rounded-full border border-valois-bronze/30 bg-valois-obsidian/80">
+                        ACT I — THE CANOPY ARRIVAL
+                    </div>
+                    <h1 id="narrativeHeading" class="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-wide text-valois-snow leading-tight mb-4 text-glow">
+                        The Cantilevered Monolith
+                    </h1>
+                    <p id="narrativeBody" class="font-sans text-sm md:text-base text-valois-champagne/80 font-light max-w-2xl mx-auto leading-relaxed">
+                        Hovering over a 600-meter sheer precipice in the Pennine Alps. Clad in charred Japanese Shou Sugi Ban larch wood and triple-glazed heated acoustic quartz.
+                    </p>
+                    <div class="mt-6 flex items-center justify-center space-x-4 pointer-events-auto">
+                        <span class="text-xs uppercase tracking-widest text-valois-mist flex items-center space-x-2">
+                            <span>Scroll to immerse in trajectory</span>
+                            <i data-lucide="arrow-down" class="w-3.5 h-3.5 animate-bounce"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-8 left-6 right-6 md:left-12 md:right-12 z-20 flex flex-col items-center">
+                    <div class="w-full max-w-3xl glass-panel p-3.5 rounded-2xl flex flex-col space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-mono text-valois-champagne/70 px-1">
+                            <span class="flex items-center space-x-1.5">
+                                <i data-lucide="compass" class="w-3.5 h-3.5 text-valois-bronze"></i>
+                                <span>INTERACTIVE ARCHITECTURAL TOUR</span>
+                            </span>
+                            <span id="scrubPercent">0% EXPLORED</span>
+                        </div>
+                        
+                        <!-- Scrub Slider -->
+                        <div class="relative w-full h-2.5 bg-valois-charcoal rounded-full overflow-hidden cursor-pointer group" id="scrubberTrack">
+                            <div id="scrubberFill" class="h-full bg-gradient-to-r from-valois-bronze via-valois-champagne to-valois-copper w-0 transition-all duration-75"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-[10px] tracking-wider uppercase text-valois-mist pt-1">
+                            <span>01: Arrival</span>
+                            <span class="hidden sm:inline">02: Basalt Hearth</span>
+                            <span class="hidden sm:inline">03: Thermal Onsen</span>
+                            <span>04: Apex Starlight</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="sanctuary" class="relative z-30 py-32 px-6 md:px-16 lg:px-24 bg-gradient-to-b from-valois-obsidian via-valois-charcoal to-valois-obsidian">
+            <div class="max-w-6xl mx-auto space-y-20">
+                <div class="text-center space-y-4">
+                    <div class="inline-block text-[11px] uppercase tracking-widest3 text-valois-bronze font-mono">Residency Features & Private Living</div>
+                    <h2 class="font-serif text-3xl md:text-5xl font-light text-valois-snow">
+                        An Alpine Sanctum Unparalleled
+                    </h2>
+                    <p class="font-sans text-valois-champagne/70 max-w-2xl mx-auto text-sm md:text-base font-light">
+                        Engineered into the living rock face at 2,480 meters. VALOIS combines radical modern architectural minimalism with absolute sensory seclusion and Michelin-tier private hospitality.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="glass-panel glass-card-hover p-8 rounded-2xl space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-valois-bronze/10 border border-valois-bronze/30 flex items-center justify-center text-valois-bronze">
+                            <i data-lucide="flame" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-light text-valois-snow">The 22m Floating Cantilever</h3>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Suspended boldly into empty alpine space. Enjoy 270-degree floor-to-ceiling vistas of the Matterhorn and Zermatt valley from heated volcanic basalt stone flooring.
+                        </p>
+                        <div class="pt-3 border-t border-white/5 text-[11px] font-mono text-valois-bronze flex items-center space-x-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                            <span>Triple-Laminated Acoustic Quartz</span>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="glass-panel glass-card-hover p-8 rounded-2xl space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-valois-bronze/10 border border-valois-bronze/30 flex items-center justify-center text-valois-bronze">
+                            <i data-lucide="droplets" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-light text-valois-snow">Geothermal Subterranean Onsen</h3>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Carved into monolithic Swiss Vals granite. Natural 41°C mineral water pumped from sub-alpine aquifers, flanked by an aromatic 200-year-old Hinoki cedar steam sauna.
+                        </p>
+                        <div class="pt-3 border-t border-white/5 text-[11px] font-mono text-valois-bronze flex items-center space-x-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                            <span>Zero-Edge Mountain Reflection Pool</span>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="glass-panel glass-card-hover p-8 rounded-2xl space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-valois-bronze/10 border border-valois-bronze/30 flex items-center justify-center text-valois-bronze">
+                            <i data-lucide="utensils" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-serif text-2xl font-light text-valois-snow">Michelin Curation & Grand Cru Cellar</h3>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Full residency includes a personal culinary brigade and master sommelier. Indulge in bespoke multi-course menus paired with rare Romanée-Conti and Dom Pérignon vintages.
+                        </p>
+                        <div class="pt-3 border-t border-white/5 text-[11px] font-mono text-valois-bronze flex items-center space-x-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                            <span>300+ Bottle Sub-Zero Cave Access</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="py-24 px-6 md:px-16 lg:px-24 bg-valois-obsidian border-t border-white/5">
+            <div class="max-w-6xl mx-auto space-y-16">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div class="space-y-3">
+                        <div class="text-[11px] uppercase tracking-widest3 text-valois-bronze font-mono">02 // Materiality & Craft</div>
+                        <h2 class="font-serif text-3xl md:text-5xl font-light text-valois-snow">
+                            The Architectural Philosophy
+                        </h2>
+                        <p class="text-valois-champagne/75 text-sm max-w-xl font-light">
+                            VALOIS was constructed with hyper-tactile, self-weathering materials chosen to endure decades of extreme alpine blizzards while exuding warmth within.
+                        </p>
+                    </div>
+                    <div class="text-xs font-mono text-valois-champagne/60 border border-white/10 px-4 py-2 rounded-full">
+                        Total Interior Footprint: 620 m²
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Material 1 -->
+                    <div class="glass-panel p-6 rounded-2xl border-t-2 border-t-valois-bronze space-y-3">
+                        <span class="text-[10px] font-mono uppercase text-valois-bronze tracking-widest">Woodwork</span>
+                        <h4 class="font-serif text-xl text-valois-snow">Yakusugi Shou Sugi Ban</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Centuries-old Japanese flame-charred larch timber. Fire-resistant, impervious to moisture, and deeply textured with midnight-black iridescence.
+                        </p>
+                    </div>
+
+                    <!-- Material 2 -->
+                    <div class="glass-panel p-6 rounded-2xl border-t-2 border-t-valois-bronze space-y-3">
+                        <span class="text-[10px] font-mono uppercase text-valois-bronze tracking-widest">Masonry</span>
+                        <h4 class="font-serif text-xl text-valois-snow">Vals Mountain Quartzite</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Honed monolith blocks quarried locally in Graubünden. Naturally flecked with mica crystals that glimmer under ambient candlelight and low sunlight.
+                        </p>
+                    </div>
+
+                    <!-- Material 3 -->
+                    <div class="glass-panel p-6 rounded-2xl border-t-2 border-t-valois-bronze space-y-3">
+                        <span class="text-[10px] font-mono uppercase text-valois-bronze tracking-widest">Metallurgy</span>
+                        <h4 class="font-serif text-xl text-valois-snow">Hand-Brushed Dark Bronze</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Custom forged I-beams, hardware, and motorized window mullions patinated with warm antique wax finishes to reject synthetic glare.
+                        </p>
+                    </div>
+
+                    <!-- Material 4 -->
+                    <div class="glass-panel p-6 rounded-2xl border-t-2 border-t-valois-bronze space-y-3">
+                        <span class="text-[10px] font-mono uppercase text-valois-bronze tracking-widest">Fenestration</span>
+                        <h4 class="font-serif text-xl text-valois-snow">Motorized Acoustic Glass</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Triple-glazed heated quartz glass panes rising 8 meters. Silent telescoping mechanisms allow uninterrupted alpine airflow on crisp calm mornings.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="expeditions" class="py-24 px-6 md:px-16 lg:px-24 bg-valois-charcoal border-t border-white/5">
+            <div class="max-w-6xl mx-auto space-y-16">
+                <div class="text-center space-y-3">
+                    <div class="text-[11px] uppercase tracking-widest3 text-valois-bronze font-mono">03 // Private Mountain Expeditions</div>
+                    <h2 class="font-serif text-3xl md:text-5xl font-light text-valois-snow">
+                        Curated Wilderness Access
+                    </h2>
+                    <p class="text-valois-champagne/70 text-sm max-w-xl mx-auto font-light">
+                        From untouched glacier couloirs to private astronomy sessions under sub-zero crystal skies, every hour is tailored to the residency.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="w-10 h-10 rounded-lg bg-valois-bronze/10 border border-valois-bronze/30 flex items-center justify-center text-valois-bronze">
+                            <i data-lucide="plane-takeoff" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-serif text-xl text-valois-snow">Private Heliski Drops</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Daily charter flights on our resident Airbus H125 helicopter. Land on virgin peaks above 4,000m accompanied by UIAGM-certified mountain guides.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="w-10 h-10 rounded-lg bg-valois-bronze/10 border border-valois-bronze/30 flex items-center justify-center text-valois-bronze">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-serif text-xl text-valois-snow">Matterhorn Night Observatory</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Equipped with high-aperture astronomical telescopes on the penthouse deck with zero light pollution. Stargaze beside our bespoke glass fire trench.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="w-10 h-10 rounded-lg bg-valois-bronze/10 border border-valois-bronze/30 flex items-center justify-center text-valois-bronze">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-serif text-xl text-valois-snow">Executive Diplomatic Privacy</h4>
+                        <p class="text-xs text-valois-champagne/70 leading-relaxed font-light">
+                            Geographically isolated with secured private approach road and sovereign privacy protocols. Preferred sanctuary for family offices and discerning collectors.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="py-24 px-6 md:px-16 lg:px-24 bg-valois-obsidian border-t border-white/5">
+            <div class="max-w-6xl mx-auto space-y-16">
+                <div class="text-center space-y-3">
+                    <div class="text-[11px] uppercase tracking-widest3 text-valois-bronze font-mono">04 // Private Buyout & Reservations</div>
+                    <h2 class="font-serif text-3xl md:text-5xl font-light text-valois-snow">
+                        Exclusivity Tiers ($15,000 – $20,000)
+                    </h2>
+                    <p class="text-valois-champagne/70 text-sm max-w-xl mx-auto font-light">
+                        All buyouts grant complete and exclusive ownership of the entire VALOIS estate for your party. Direct transfer options include Pilatus PC-24 jet or private AgustaWestland helicopter.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Tier 1: $15,000 Architectural Sanctuary Buyout -->
+                    <div class="glass-panel glass-card-hover p-8 md:p-10 rounded-3xl border border-valois-bronze/30 space-y-6 flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs uppercase tracking-widest font-mono text-valois-bronze">Residency Tier I</span>
+                                <span class="text-3xl font-serif text-valois-snow">$15,000 <span class="text-xs font-sans text-valois-mist">/ 3 Nights</span></span>
+                            </div>
+                            <h3 class="font-serif text-3xl font-light text-valois-snow">The Architectural Sanctuary Buyout</h3>
+                            <p class="text-xs text-valois-champagne/75 leading-relaxed font-light">
+                                Comprehensive buyout of the entire 620 m² residence for up to 6 guests. Inclusive of private Michelin-starred chef, daily geothermal onsen thermal bath therapy, and bespoke alpine breakfast.
+                            </p>
+                            <ul class="space-y-3 text-xs text-valois-champagne/80 font-mono pt-4 border-t border-white/5">
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>Exclusive use of all 3 Cantilevered Master Suites</span></li>
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>Subterranean Geothermal Mineral Onsen & Hinoki Sauna</span></li>
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>Geneva / Zurich VIP Chauffeur in Rolls-Royce Cullinan</span></li>
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>24/7 Dedicated Estate Concierge & Ski Valet</span></li>
+                            </ul>
+                        </div>
+                        <button onclick="openBookingModal('The Architectural Sanctuary Buyout ($15,000)')" class="w-full glass-panel hover:bg-valois-bronze hover:text-valois-obsidian text-valois-bronze font-medium py-3.5 rounded-xl uppercase tracking-widest text-xs transition-all border border-valois-bronze/40">
+                            Select Sanctuary Buyout
+                        </button>
+                    </div>
+
+                    <!-- Tier 2: $20,000 Matterhorn Heliski & Apex Sanctuary -->
+                    <div class="glass-panel glass-card-hover p-8 md:p-10 rounded-3xl border-2 border-valois-bronze relative space-y-6 flex flex-col justify-between shadow-2xl shadow-valois-bronze/10">
+                        <div class="absolute -top-3.5 right-8 bg-gradient-to-r from-valois-bronze to-valois-copper text-valois-obsidian text-[10px] uppercase font-mono font-bold tracking-widest px-3.5 py-1 rounded-full">
+                            Curated Masterpiece
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs uppercase tracking-widest font-mono text-valois-bronze">Residency Tier II</span>
+                                <span class="text-3xl font-serif text-valois-snow">$20,000 <span class="text-xs font-sans text-valois-mist">/ 4 Nights</span></span>
+                            </div>
+                            <h3 class="font-serif text-3xl font-light text-valois-snow">Matterhorn Heliski & Apex Sanctuary</h3>
+                            <p class="text-xs text-valois-champagne/75 leading-relaxed font-light">
+                                The pinnacle alpine journey. Everything in Tier I augmented with 2 private helicopter summit drops, unlimited sommelier wine pairings, and private architectural monograph signing.
+                            </p>
+                            <ul class="space-y-3 text-xs text-valois-champagne/80 font-mono pt-4 border-t border-white/5">
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>2 Private Mountain Helicopter Drops (Airbus H125 / AW109)</span></li>
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>Full Valois Grand Cru Cellar Inclusions & Vintage Champagne</span></li>
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>Private Blueprints & 1:50 Bronze Scale Model Handover</span></li>
+                                <li class="flex items-center space-x-2.5"><i data-lucide="check" class="w-4 h-4 text-valois-bronze"></i><span>Private Helipad Priority Arrival Direct to Terrace</span></li>
+                            </ul>
+                        </div>
+                        <button onclick="openBookingModal('Matterhorn Heliski & Apex Sanctuary ($20,000)')" class="w-full bg-gradient-to-r from-valois-bronze to-valois-copper text-valois-obsidian font-semibold py-3.5 rounded-xl uppercase tracking-widest text-xs hover:brightness-110 transition-all shadow-lg shadow-valois-bronze/20">
+                            Select Heliski & Apex Tour
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-16 px-6 md:px-16 bg-black border-t border-white/5 text-center space-y-6">
+            <div class="flex items-center justify-center space-x-3">
+                <span class="font-serif text-2xl tracking-widest font-light text-valois-snow">VALOIS</span>
+                <span class="w-1 h-1 rounded-full bg-valois-bronze"></span>
+                <span class="text-xs uppercase tracking-widest text-valois-champagne/60">Zermatt • Valais • Swiss Alps</span>
+            </div>
+            <p class="text-xs text-valois-mist max-w-md mx-auto font-light leading-relaxed">
+                A private architectural estate and ecological sanctuary. Engineered for timeless contemplation 2,480 meters above sea level.
+            </p>
+            <div class="text-[11px] font-mono text-valois-champagne/40">
+                © 2026 VALOIS S.A. • All Rights Reserved. Private Estate & Architectural Sanctuary.
+            </div>
+        </footer>
+    </main>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="glass-panel max-w-lg w-full p-6 md:p-8 rounded-3xl border border-valois-bronze/40 space-y-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onclick="closeBookingModal()" class="absolute top-5 right-5 text-valois-mist hover:text-valois-snow transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="space-y-2">
+                <div class="text-[10px] font-mono uppercase tracking-widest text-valois-bronze">Confidential Itinerary Reservation</div>
+                <h3 class="font-serif text-2xl text-valois-snow" id="modalTierTitle">Reserve Architectural Residency</h3>
+                <p class="text-xs text-valois-champagne/70 font-light">
+                    Direct confidential contact with the Managing Director & Estate Concierge.
+                </p>
+            </div>
+
+            <form id="reservationForm" onsubmit="handleReservationSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-mono uppercase tracking-wider text-valois-mist mb-1">Full Legal Name</label>
+                    <input type="text" required placeholder="Lord / Lady / Dr. / M." class="w-full bg-valois-charcoal border border-white/10 rounded-xl px-4 py-2.5 text-xs text-valois-snow focus:outline-none focus:border-valois-bronze transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-mono uppercase tracking-wider text-valois-mist mb-1">Confidential Email</label>
+                    <input type="email" required placeholder="contact@familyoffice.ch" class="w-full bg-valois-charcoal border border-white/10 rounded-xl px-4 py-2.5 text-xs text-valois-snow focus:outline-none focus:border-valois-bronze transition-colors">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-mono uppercase tracking-wider text-valois-mist mb-1">Preferred Arrival</label>
+                        <input type="date" required class="w-full bg-valois-charcoal border border-white/10 rounded-xl px-3 py-2 text-xs text-valois-snow focus:outline-none focus:border-valois-bronze transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-mono uppercase tracking-wider text-valois-mist mb-1">Helipad Transfer</label>
+                        <select class="w-full bg-valois-charcoal border border-white/10 rounded-xl px-3 py-2 text-xs text-valois-snow focus:outline-none focus:border-valois-bronze transition-colors">
+                            <option>Zurich Kloten (ZRH)</option>
+                            <option>Geneva Cointrin (GVA)</option>
+                            <option>Sion Executive (SIR)</option>
+                            <option>Milan Malpensa (MXP)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-valois-bronze to-valois-copper hover:brightness-110 text-valois-obsidian font-semibold py-3 rounded-xl uppercase tracking-widest text-xs transition-all shadow-lg shadow-valois-bronze/20 mt-2">
+                    Submit Confidential Inquiry
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 glass-panel px-5 py-3.5 rounded-2xl border border-valois-bronze text-xs font-mono text-valois-snow transform translate-y-28 opacity-0 transition-all duration-300 shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <i data-lucide="check-circle" class="w-4 h-4 text-valois-bronze"></i>
+        <span id="toastMessage">Inquiry transmitted successfully.</span>
+    </div>
+
+    <script>
+        const TOTAL_FRAMES = 120;
+        let currentFrameIndex = 0;
+        let targetFrameIndex = 0;
+        let isAudioActive = false;
+        let toneSynth = null;
+        let toneFireNoise = null;
+        let toneWindFilter = null;
+        let cachedImages = [];
+        let hasLoadedExternalImages = false;
+
+        const canvas = document.getElementById('scrubCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+
+        // Act Narrative Content Array
+        const ACT_DATA = [
+            {
+                start: 0,
+                end: 30,
+                badge: "ACT I — THE CANOPY ARRIVAL",
+                heading: "The Cantilevered Monolith",
+                body: "Hovering over a 600-meter sheer precipice in the Pennine Alps. Clad in charred Japanese Shou Sugi Ban larch wood and triple-glazed heated acoustic quartz.",
+                telemetry: "ACT I : DESCENT",
+                cam: "Heli-Arc 45°",
+                alt: "2,480 M"
+            },
+            {
+                start: 31,
+                end: 65,
+                badge: "ACT II — THE GREAT HEARTH",
+                heading: "Volcanic Basalt & Fire",
+                body: "Seamless motorized 8-meter glass reveals the centerpiece: a floating black obsidian hearth suspended over radiant-heated Swiss Vals quartzite floors.",
+                telemetry: "ACT II : INTERIOR",
+                cam: "Orbit 180°",
+                alt: "2,468 M"
+            },
+            {
+                start: 66,
+                end: 95,
+                badge: "ACT III — SUBTERRANEAN ONSEN",
+                heading: "Thermal Geothermal Sanctuary",
+                body: "Naturally heated 41°C mineral water pumped from sub-alpine aquifers into a zero-edge bath, framed by ancient Hinoki cedar slatting and steam.",
+                telemetry: "ACT III : CAVERN",
+                cam: "Tilt -25° Tracking",
+                alt: "2,455 M"
+            },
+            {
+                start: 96,
+                end: 120,
+                badge: "ACT IV — STARLIGHT PENTHOUSE",
+                heading: "The Matterhorn Silhouette",
+                body: "Ascending to the observatory master deck. Retractable sky-glass reveals pristine zero-light-pollution constellations and private helipad coordinates.",
+                telemetry: "ACT IV : APEX",
+                cam: "Crane Up 180°",
+                alt: "2,486 M"
+            }
+        ];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            renderFrame(currentFrameIndex);
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function renderProceduralScene(frame) {
+            const w = canvas.width;
+            const h = canvas.height;
+            const progress = frame / (TOTAL_FRAMES - 1); // 0 to 1
+
+            // 1. Sky Gradient transitioning with altitude and act
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+            if (progress < 0.3) {
+                // Cold Blue Hour Dusk
+                skyGrad.addColorStop(0, '#0a0d16');
+                skyGrad.addColorStop(0.5, '#121824');
+                skyGrad.addColorStop(1, '#1b2232');
+            } else if (progress < 0.6) {
+                // Warm Hearth Ambient spill
+                skyGrad.addColorStop(0, '#0d0d12');
+                skyGrad.addColorStop(0.5, '#1e1614');
+                skyGrad.addColorStop(1, '#2c1e17');
+            } else if (progress < 0.85) {
+                // Mineral Cave Steam & Subdued Quartz
+                skyGrad.addColorStop(0, '#060a0d');
+                skyGrad.addColorStop(0.6, '#0f181c');
+                skyGrad.addColorStop(1, '#19262b');
+            } else {
+                // Deep Constellation Night & Gold Beacon
+                skyGrad.addColorStop(0, '#030406');
+                skyGrad.addColorStop(0.6, '#090b10');
+                skyGrad.addColorStop(1, '#131720');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 2. Distant Alpine Jagged Peaks (Matterhorn Silhouette)
+            ctx.save();
+            ctx.beginPath();
+            const peakY = h * (0.35 + Math.sin(progress * Math.PI) * 0.08);
+            ctx.moveTo(0, h);
+            ctx.lineTo(0, peakY);
+            
+            const peaks = [
+                { x: 0.15 * w, y: peakY - 80 },
+                { x: 0.35 * w, y: peakY + 20 },
+                { x: 0.52 * w, y: peakY - 140 }, // Matterhorn
+                { x: 0.70 * w, y: peakY - 40 },
+                { x: 0.88 * w, y: peakY - 110 },
+                { x: w, y: peakY }
+            ];
+
+            peaks.forEach(pt => ctx.lineTo(pt.x, pt.y));
+            ctx.lineTo(w, h);
+            ctx.closePath();
+            
+            const mountainGrad = ctx.createLinearGradient(0, peakY - 140, 0, h);
+            mountainGrad.addColorStop(0, '#1a202c');
+            mountainGrad.addColorStop(0.5, '#0d1117');
+            mountainGrad.addColorStop(1, '#05070a');
+            ctx.fillStyle = mountainGrad;
+            ctx.fill();
+
+            // Snow crags highlights on peaks
+            ctx.strokeStyle = 'rgba(223, 211, 195, 0.15)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.restore();
+
+            // 3. Dynamic Architectural Geometry (Valois Monolith Cantilever & Interior)
+            ctx.save();
+            const zoom = 1 + progress * 0.8;
+            const panX = (progress - 0.5) * w * 0.25;
+            const panY = progress * h * 0.15;
+
+            ctx.translate(w / 2 + panX, h / 2 + panY);
+            ctx.scale(zoom, zoom);
+
+            const cabinWidth = Math.min(w * 0.65, 750);
+            const cabinHeight = cabinWidth * 0.45;
+
+            // Structure Shadow & Base
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+            ctx.shadowBlur = 40;
+
+            // Charred Shou Sugi Ban Wood Framing
+            ctx.fillStyle = '#101216';
+            ctx.fillRect(-cabinWidth / 2, -cabinHeight / 2, cabinWidth, cabinHeight);
+
+            // Thermal Heated Glass Pane with Interior Glow
+            const glassGrad = ctx.createLinearGradient(-cabinWidth / 2, -cabinHeight / 2, cabinWidth / 2, cabinHeight / 2);
+            glassGrad.addColorStop(0, 'rgba(197, 168, 128, 0.25)');
+            glassGrad.addColorStop(0.5, 'rgba(255, 220, 170, 0.45)');
+            glassGrad.addColorStop(1, 'rgba(158, 119, 75, 0.3)');
+            ctx.fillStyle = glassGrad;
+            ctx.fillRect(-cabinWidth / 2 + 18, -cabinHeight / 2 + 18, cabinWidth - 36, cabinHeight - 36);
+
+            // Architectural Bronze Mullion Beams
+            ctx.strokeStyle = 'rgba(197, 168, 128, 0.6)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-cabinWidth / 2 + 18, -cabinHeight / 2 + 18, cabinWidth - 36, cabinHeight - 36);
+
+            // Suspended Fireplace / Hearth representation
+            const fireX = cabinWidth * 0.12;
+            const fireY = cabinHeight * 0.08;
+            
+            // Flue pipe
+            ctx.strokeStyle = '#1b1d22';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(fireX, -cabinHeight / 2 + 18);
+            ctx.lineTo(fireX, fireY);
+            ctx.stroke();
+
+            // Fireplace bowl and flame aura
+            const fireGlow = ctx.createRadialGradient(fireX, fireY, 2, fireX, fireY, 90);
+            fireGlow.addColorStop(0, 'rgba(255, 140, 50, 0.9)');
+            fireGlow.addColorStop(0.4, 'rgba(255, 90, 20, 0.4)');
+            fireGlow.addColorStop(1, 'rgba(255, 50, 0, 0)');
+            ctx.fillStyle = fireGlow;
+            ctx.beginPath();
+            ctx.arc(fireX, fireY, 90, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+
+            // 4. Atmospheric Snow Specks
+            ctx.fillStyle = 'rgba(247, 248, 250, 0.6)';
+            for (let i = 0; i < 40; i++) {
+                const seedX = ((i * 137.5 + frame * 3.5) % w);
+                const seedY = ((i * 211.3 + frame * 4.8) % h);
+                const size = (i % 3) + 1;
+                ctx.beginPath();
+                ctx.arc(seedX, seedY, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function preloadFrameSequence() {
+            let loadedCount = 0;
+            const sampleImg = new Image();
+            sampleImg.src = './public/assets/sequence/frame_0001.webp';
+            
+            sampleImg.onload = () => {
+                hasLoadedExternalImages = true;
+                for (let i = 1; i <= TOTAL_FRAMES; i++) {
+                    const pad = String(i).padStart(4, '0');
+                    const img = new Image();
+                    img.src = `./public/assets/sequence/frame_${pad}.webp`;
+                    img.onload = () => {
+                        cachedImages[i - 1] = img;
+                        loadedCount++;
+                    };
+                }
+            };
+
+            sampleImg.onerror = () => {
+                hasLoadedExternalImages = false;
+            };
+        }
+
+        function renderFrame(index) {
+            const frameInt = Math.floor(index);
+            if (hasLoadedExternalImages && cachedImages[frameInt]) {
+                ctx.drawImage(cachedImages[frameInt], 0, 0, canvas.width, canvas.height);
+            } else {
+                renderProceduralScene(frameInt);
+            }
+            updateTelemetryAndNarrative(frameInt);
+        }
+
+        function updateTelemetryAndNarrative(frame) {
+            const pct = Math.round((frame / (TOTAL_FRAMES - 1)) * 100);
+            document.getElementById('scrubPercent').innerText = `${pct}% EXPLORED`;
+            document.getElementById('scrubberFill').style.width = `${pct}%`;
+            document.getElementById('telemetryFrame').innerText = `#${String(frame + 1).padStart(4, '0')} / ${TOTAL_FRAMES}`;
+
+            const act = ACT_DATA.find(a => frame >= a.start && frame <= a.end) || ACT_DATA[0];
+            
+            document.getElementById('telemetryActBadge').innerText = act.telemetry;
+            document.getElementById('telemetryCam').innerText = act.cam;
+            document.getElementById('telemetryAlt').innerText = act.alt;
+
+            const badgeEl = document.getElementById('narrativeBadge');
+            const headingEl = document.getElementById('narrativeHeading');
+            const bodyEl = document.getElementById('narrativeBody');
+
+            if (badgeEl.innerText !== act.badge) {
+                badgeEl.innerText = act.badge;
+                headingEl.innerText = act.heading;
+                bodyEl.innerText = act.body;
+            }
+        }
+
+        function handleScroll() {
+            const container = document.getElementById('experience');
+            const rect = container.getBoundingClientRect();
+            const scrollDistance = container.offsetHeight - window.innerHeight;
+            const currentScroll = -rect.top;
+
+            let progress = currentScroll / scrollDistance;
+            progress = Math.max(0, Math.min(1, progress));
+
+            targetFrameIndex = progress * (TOTAL_FRAMES - 1);
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        function animationLoop() {
+            currentFrameIndex += (targetFrameIndex - currentFrameIndex) * 0.18;
+            renderFrame(currentFrameIndex);
+            requestAnimationFrame(animationLoop);
+        }
+
+        const scrubberTrack = document.getElementById('scrubberTrack');
+
+        function scrubFromPointer(e) {
+            const rect = scrubberTrack.getBoundingClientRect();
+            let pos = (e.clientX - rect.left) / rect.width;
+            pos = Math.max(0, Math.min(1, pos));
+            
+            const container = document.getElementById('experience');
+            const scrollDistance = container.offsetHeight - window.innerHeight;
+            window.scrollTo({
+                top: container.offsetTop + (pos * scrollDistance),
+                behavior: 'smooth'
+            });
+        }
+
+        scrubberTrack.addEventListener('click', scrubFromPointer);
+
+        function seekToFrame(targetFrame) {
+            const container = document.getElementById('experience');
+            const scrollDistance = container.offsetHeight - window.innerHeight;
+            const targetScroll = container.offsetTop + ((targetFrame / (TOTAL_FRAMES - 1)) * scrollDistance);
+            window.scrollTo({
+                top: targetScroll,
+                behavior: 'smooth'
+            });
+        }
+
+        async function toggleAudio() {
+            if (!isAudioActive) {
+                await Tone.start();
+                
+                // Wind Synth Lowpass
+                const windNoise = new Tone.Noise("pink").start();
+                toneWindFilter = new Tone.AutoFilter({
+                    frequency: "0.15hz",
+                    baseFrequency: 180,
+                    octaves: 2.5
+                }).toDestination().start();
+                windNoise.connect(toneWindFilter);
+                windNoise.volume.value = -22;
+
+                // Fireplace Hearth Sound
+                toneFireNoise = new Tone.Noise("brown").start();
+                const fireFilter = new Tone.Filter(450, "bandpass").toDestination();
+                toneFireNoise.connect(fireFilter);
+                toneFireNoise.volume.value = -28;
+
+                // Ethereal Quartz Chimes
+                toneSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 2, decay: 3, sustain: 0.4, release: 4 }
+                }).toDestination();
+                toneSynth.volume.value = -26;
+
+                Tone.Transport.start();
+
+                isAudioActive = true;
+                document.getElementById('soundIcon').className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+                document.getElementById('soundLabel').innerText = "Alpine Ambience: On";
+                showToast("Alpine acoustic ambience active (Wind & Hearth).");
+            } else {
+                Tone.Transport.stop();
+                isAudioActive = false;
+                document.getElementById('soundIcon').className = "w-2 h-2 rounded-full bg-valois-mist";
+                document.getElementById('soundLabel').innerText = "Alpine Ambience: Off";
+                showToast("Audio muted.");
+            }
+        }
+        document.getElementById('soundToggleBtn').addEventListener('click', toggleAudio);
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-28', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-28', 'opacity-0');
+            }, 3500);
+        }
+
+        function openBookingModal(tierName) {
+            document.getElementById('modalTierTitle').innerText = tierName;
+            document.getElementById('bookingModal').classList.remove('hidden');
+            document.getElementById('bookingModal').classList.add('flex');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.getElementById('bookingModal').classList.remove('flex');
+        }
+
+        function handleReservationSubmit(e) {
+            e.preventDefault();
+            closeBookingModal();
+            showToast("Private inquiry transmitted. Our Estate Director will contact your office.");
+        }
+
+        window.onload = function() {
+            try {
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                } else if (window.lucide && window.lucide.createIcons) {
+                    window.lucide.createIcons();
+                }
+            } catch (err) {
+                console.warn("Lucide icons could not be rendered:", err);
+            }
+
+            resizeCanvas();
+            preloadFrameSequence();
+            handleScroll();
+            animationLoop();
+        };
+    </script>
+</body>
+</html>
